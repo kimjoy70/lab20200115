@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TalkClient",
+            "request": "launch",
+            "mainClass": "com.network2.TalkClient",
+            "projectName": "dev_java"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TalkServer",
+            "request": "launch",
+            "mainClass": "com.network2.TalkServer",
+            "projectName": "dev_java"
+        }
+    ]
+}

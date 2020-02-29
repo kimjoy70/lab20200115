@@ -1,0 +1,50 @@
+package thread.bank;
+
+public class CustomerBankThread extends Thread {
+	public void run() {
+		String msg = null;
+		boolean isStop = false;
+		while(!isStop) {//무한루프 방지코드를 꼭 추가하자 - 변수처리하자, 조건식을 활용하자
+			try {
+				//100|나초보
+				msg = (String)tc.ois.readObject();
+				StringTokenizer st  = null;
+				int protocol = 0;
+				if(msg!=null) {
+					st = new StringTokenizer(msg,"|");
+					protocol = Integer.parseInt(st.nextToken());
+				}
+				switch(protocol) {
+					case Protocol.ROOM_IN:{
+						String nickName = st.nextToken();
+						//입장하였습니다 글자색을 초록색으로 적용하기
+						String fontColor = st.nextToken();
+						SimpleAttributeSet sas = makeAttribute(fontColor);
+						Vector<String> v_nick = new Vector<String>();
+						v_nick.add(nickName);
+						tc.dtm_nick.addRow(v_nick);
+						tc.jsp_nick.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+							public void adjustmentValueChanged(AdjustmentEvent e) {
+								JScrollBar jsb = (JScrollBar)e.getSource();
+								jsb.setValue(jsb.getMaximum());
+							}
+						});
+						//tc.jtp_display.append(nickName+"님이 입장하였습니다.\n");
+						//예외처리대상 - JDBC API, Network API, Thread, IO
+						try {
+							//offset-위치, str-메시지, a-attribute속성부여
+							//tc.sd_display.insertString(offset, str, a);
+							tc.sd_display.insertString(tc.sd_display.getLength()
+									                 , nickName+"님이 입장하였습니다.\n"
+									                 , sas);
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					}break;
+				}//////////////end of switch
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	}
+}

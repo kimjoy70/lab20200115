@@ -1,0 +1,12 @@
+package design.book;
+
+import javax.swing.JFrame;
+
+public class TimeServerVer2 extends JFrame implements Runnable {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

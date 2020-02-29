@@ -1,0 +1,41 @@
+package design.book;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.util.DBConnectionMgr;
+
+public class BookDao {
+	DBConnectionMgr dbMgr = DBConnectionMgr.getInstance();
+	Connection con = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	public List<Map<String,Object>> getBookList(){
+		List<Map<String,Object>> bList = new ArrayList<>();
+		StringBuilder sql = new StringBuilder();
+		try {
+			sql.append("select b_no, b_name, author, publish, b_info from book2020");
+			con = dbMgr.getConnection();
+			pstmt = con.prepareStatement(sql.toString());
+			rs = pstmt.executeQuery();
+			Map<String,Object> rMap = null;
+			while(rs.next()) {
+				rMap = new HashMap<>();
+				rMap.put("b_no", rs.getInt("b_no"));
+				rMap.put("b_name", rs.getString("b_name"));
+				rMap.put("author", rs.getString("author"));
+				rMap.put("publish", rs.getString("publish"));
+				rMap.put("b_info", rs.getString("b_info"));
+				bList.add(rMap);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bList;
+	}
+}

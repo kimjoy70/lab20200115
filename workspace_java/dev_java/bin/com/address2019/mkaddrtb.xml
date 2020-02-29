@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="mkaddrtb">
+	<typeAlias 
+		alias="addressVO" 
+		type="com.address2019.AddressVO"/>
+	<select id="retrieveAll" resultClass="java.util.HashMap">
+		SELECT id, name, address, telephone
+		  FROM mkaddrtb ORDER BY name
+	</select>
+	<insert id="insertAddress" parameterClass="addressVO">
+		INSERT INTO mkaddrtb(name, address, telephone, gender
+		                   , relationship,birthday, comments, registedate, id)
+				     VALUES (#name#, #address#, #telephone#, #gender#
+		                   , #relationship#,#birthday#, #comments#, #registedate#, mkaddrtb_seq.nextval)
+	</insert>
+	<update id="updateAddress" parameterClass="addressVO">
+		UPDATE mkaddrtb
+		   SET name = #name#
+		      ,address = #address#
+		      ,telephone = #telephone#
+		      ,gender = #gender#
+		      ,relationship = #relationship#
+		      ,birthday = #birthday#
+		      ,comments = #comments#
+		      ,registedate = to_char(sysdate, 'YYYYMMDD')
+		 WHERE id = #id# 
+	</update>
+	<delete id = "deleteAddress" parameterClass="addressVO">
+		DELETE FROM mkaddrtb WHERE id = #id#
+	</delete>
+	<parameterMap id="ibatisTestMap" class="java.util.Map">
+		<parameter property="msg" javaType="java.lang.String" jdbcType="VARCHAR" mode="OUT" />
+		<parameter property="param_1" javaType="java.lang.Integer" jdbcType="INTEGER" mode="IN" />
+  	</parameterMap>
+  	<procedure id="ibatisTest" parameterMap="ibatisTestMap">
+    	{ ? = call scott.proc_emp_sal_update2 (?) }
+  	</procedure>		
+</sqlMap>
+

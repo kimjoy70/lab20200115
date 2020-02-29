@@ -1,0 +1,44 @@
+package thread.bank;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.StringTokenizer;
+
+public class ServerBankThread extends Thread {
+	ServerBank sBank = null;
+	ObjectInputStream ois  = null;
+	ObjectOutputStream oos = null;	
+	public ServerBankThread(ServerBank sBank) {
+		this.sBank = sBank;
+		try {
+			oos = new ObjectOutputStream
+					(sBank.client.getOutputStream());			
+			ois = new ObjectInputStream
+						(sBank.client.getInputStream());
+			String msg = (String)ois.readObject();
+			sBank.jta_log.append(msg+"\n");
+			sBank.jta_log.setCaretPosition(sBank.jta_log.getDocument().getLength());
+			StringTokenizer st = null;
+			if(msg!=null) {
+				 st = new StringTokenizer(msg,Protocol.seperator);
+			}
+		} catch (Exception e) {
+			System.out.println("TalkServerThread:"+e.getMessage()+","+e.toString());
+		}		
+	}//////////////end of ServerBankThread
+	public void broadCasting(String msg) {
+		//JOptionPane.showMessageDialog(ts, "서버:사람수:"+ts.globalList.size());
+		synchronized(this) {
+			for(ServerBankThread tst:sBank.globalList) {
+				tst.send(msg);
+			}
+		}
+	}//////////////end of broadCasting 전체에 방송
+	private void send(String msg) {
+		try {
+			oos.writeObject(msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+}

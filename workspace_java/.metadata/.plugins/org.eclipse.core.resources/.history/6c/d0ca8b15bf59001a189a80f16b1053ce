@@ -1,0 +1,41 @@
+package thread.bank;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.util.DBConnectionMgr;
+
+public class CustomerDao {
+	DBConnectionMgr dbMgr = DBConnectionMgr.getInstance();
+	Connection con = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	public List<Map<String,Object>> getBankAccount(String mem_id){
+		List<Map<String,Object>> baList = new ArrayList<>();
+		StringBuilder sql = new StringBuilder();
+		try {
+			sql.append("SELECT accountnumber,balance,mem_name FROM member2020");
+			//sql.append(" WHERE mem_id=?");
+			con = dbMgr.getConnection();
+			pstmt = con.prepareStatement(sql.toString());
+			//pstmt.setString(1, mem_id);
+			rs = pstmt.executeQuery();
+			Map<String,Object> rMap = null;
+			while(rs.next()) {
+				rMap = new HashMap<>();
+				rMap.put("accountnumber", rs.getString("accountnumber"));
+				rMap.put("balance", rs.getString("balance"));
+				rMap.put("mem_name", rs.getString("mem_name"));
+				baList.add(rMap);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return baList;
+	}
+}

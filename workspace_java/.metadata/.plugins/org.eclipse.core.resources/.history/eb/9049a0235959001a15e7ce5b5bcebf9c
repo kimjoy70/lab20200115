@@ -1,0 +1,29 @@
+package thread.bank;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+public class ServerBank extends JFrame implements Runnable{
+	ServerSocket server = null;
+	Socket       client = null;
+	JTextArea 	jta_log = new JTextArea();
+	JScrollPane jsp_log = new JScrollPane(jta_log
+			                             ,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+			                             ,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);//일종의 속지임
+	ServerBankThread sbt = null;
+	public static void main(String[] args) {
+		
+
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

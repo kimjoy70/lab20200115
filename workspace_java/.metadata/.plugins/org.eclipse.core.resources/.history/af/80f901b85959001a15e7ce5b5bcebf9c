@@ -1,0 +1,9 @@
+package thread.bank;
+
+public class ServerBankThread extends Thread {
+	ServerBank serverBank = null;
+	public ServerBankThread(ServerBank serverBank) {
+		this.serverBank = serverBank;
+	}
+	
+}

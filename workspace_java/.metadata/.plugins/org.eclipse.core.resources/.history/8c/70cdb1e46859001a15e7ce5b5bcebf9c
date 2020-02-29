@@ -1,0 +1,16 @@
+package thread.bank;
+
+import javax.swing.JFrame;
+
+public class CustomerBank extends JFrame {
+	CustomerBank(){
+		
+	}
+	public void initDisplay() {
+		
+	}
+	public static void main(String[] args) {
+		CustomerBank cus = new CustomerBank();
+	}
+
+}

@@ -1,0 +1,20 @@
+package thread.bank;
+
+import javax.swing.JFrame;
+
+public class CustomerBank extends JFrame {
+	CustomerBank(){
+		
+	}
+	public void initDisplay() {
+		this.add(jp_first);//첫번째 섹션
+		this.add(jp_second);//두번째 섹션
+		this.setTitle(nickName+"님의 대화창");
+		this.setSize(500, 400);
+		this.setVisible(true);		
+	}
+	public static void main(String[] args) {
+		CustomerBank cus = new CustomerBank();
+	}
+
+}

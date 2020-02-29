@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;scjp.method.A&apos; to &apos;A39&apos;&#x0D;&#x0A;- Original project: &apos;dev_java&apos;&#x0D;&#x0A;- Original element: &apos;scjp.method.A&apos;&#x0D;&#x0A;- Renamed element: &apos;scjp.method.A39&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;A&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;scjp.method{A.java[A" matchStrategy="1" name="A39" qualified="false" references="true" similarDeclarations="false" stamp="1580110175079" textual="false" version="1.0"/>
+</session>

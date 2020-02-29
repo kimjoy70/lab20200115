@@ -1,0 +1,27 @@
+package thread.bank;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.util.DBConnectionMgr;
+
+public class CustomerDao {
+	DBConnectionMgr dbMgr = DBConnectionMgr.getInstance();
+	Connection con = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	public List<Map<String,Object>> getBankAccount(String mem_id){
+		List<Map<String,Object>> baList = new ArrayList<>();
+		StringBuilder sql = new StringBuilder();
+		try {
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return baList;
+	}
+}

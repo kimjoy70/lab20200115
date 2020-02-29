@@ -1,0 +1,11 @@
+package design.book;
+
+import java.util.List;
+import java.util.Map;
+
+public class BookDao {
+	public List<Map<String,Object>> getBookList(){
+		List<Map<String,Object>> bList = null;
+		return bList;
+	}
+}

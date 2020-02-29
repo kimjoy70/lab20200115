@@ -1,0 +1,25 @@
+package design.book;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+public class TimeServerVer2 extends JFrame implements Runnable {
+	//선언부
+	JTextArea jta_log = new JTextArea();
+	JScrollPane jsp_log = new JScrollPane(jta_log
+			,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+			,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

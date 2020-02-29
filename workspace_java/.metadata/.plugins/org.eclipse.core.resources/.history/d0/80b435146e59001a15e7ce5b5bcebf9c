@@ -1,0 +1,57 @@
+package thread.bank;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+public class CustomerBank extends JFrame {
+	Socket mySocket = null;
+	ObjectInputStream ois  = null;
+	ObjectOutputStream oos = null;		
+	String nickName = null;
+	String ip = "127.0.0.1";
+	int port = 3002;
+	CustomerBank(){
+		
+	}
+	public void initDisplay() {
+		this.add(jp_first);//첫번째 섹션
+		this.add(jp_second);//두번째 섹션
+		this.setTitle(nickName+"님의 대화창");
+		this.setSize(500, 400);
+		this.setVisible(true);		
+	}
+	public void connect_process() {
+		nickName = JOptionPane.showInputDialog("너의 대화명은?");
+		this.setTitle(nickName+"님의 대화창");
+		try {
+			//통신은 지연될 수 있다.-wait - try...catch해야함.
+			mySocket = new Socket(ip,port);
+			oos = new ObjectOutputStream
+					(mySocket.getOutputStream());			
+			ois = new ObjectInputStream
+						(mySocket.getInputStream());
+			//톡방 정보 담기
+			Room room = new Room();
+			room.setTitle("스마트웹모바일 응용SW엔지니어");
+			room.current = 10;
+			room.state = "대기";
+			//100|나초보
+//			oos.writeObject(Protocol.ROOM_IN+Protocol.seperator+nickName+Protocol.seperator+room.getTitle());
+			oos.writeObject(Protocol.WAIT
+					       +Protocol.seperator+nickName
+					       +Protocol.seperator+room.state);
+			TalkClientThread tct = new TalkClientThread(this);
+			tct.start();//TalkClientThread의 run호출됨.-콜백함수
+		} catch (Exception e) {
+			System.out.println(e.toString());//에러 힌트문 출력.
+		}		
+	}	
+	public static void main(String[] args) {
+		CustomerBank cus = new CustomerBank();
+	}
+
+}

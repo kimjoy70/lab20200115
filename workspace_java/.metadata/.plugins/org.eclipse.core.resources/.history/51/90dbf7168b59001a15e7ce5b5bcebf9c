@@ -1,0 +1,65 @@
+package thread.bank;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.table.DefaultTableModel;
+
+public class CustomerBank extends JFrame {
+	Socket mySocket = null;
+	ObjectInputStream ois  = null;
+	ObjectOutputStream oos = null;		
+	String nickName = null;
+	String ip = "127.0.0.1";
+	int port = 3002;
+	JTextArea jta_cus = new JTextArea(9,30);
+	JScrollPane jsp_cus = new JScrollPane(jta_cus);
+	String cols[] = {"계좌번호","잔액","예금주"};
+	String data[][] = new String[0][3];
+	DefaultTableModel dtm_acc = new DefaultTableModel(data,cols);
+	JTable jtb_acc = new JTable(dtm_acc);
+	JScrollPane jsp_acc = new JScrollPane(jtb_acc);
+	CustomerDao cusDao = new CustomerDao();
+	CustomerBank(){
+		initDisplay();
+		connect_process();
+	}
+	public void setAccountBank() {
+		
+	}
+	public void initDisplay() {
+		this.setTitle(nickName+"님의 대화창");
+		this.add("Center",jsp_acc);
+		this.add("South",jsp_cus);
+		this.setSize(500, 700);
+		this.setVisible(true);		
+	}
+	public void connect_process() {
+		nickName = JOptionPane.showInputDialog("너의 대화명은?");
+		this.setTitle(nickName+"님의 대화창");
+		try {
+			//통신은 지연될 수 있다.-wait - try...catch해야함.
+			mySocket = new Socket(ip,port);
+			oos = new ObjectOutputStream
+					(mySocket.getOutputStream());			
+			ois = new ObjectInputStream
+						(mySocket.getInputStream());
+			oos.writeObject(Protocol.ROOM_IN
+				       +Protocol.seperator+nickName);			
+			CustomerBankThread cbt = new CustomerBankThread(this);
+			cbt.start();//TalkClientThread의 run호출됨.-콜백함수
+		} catch (Exception e) {
+			System.out.println(e.toString());//에러 힌트문 출력.
+		}		
+	}	
+	public static void main(String[] args) {
+		CustomerBank cus = new CustomerBank();
+	}
+
+}

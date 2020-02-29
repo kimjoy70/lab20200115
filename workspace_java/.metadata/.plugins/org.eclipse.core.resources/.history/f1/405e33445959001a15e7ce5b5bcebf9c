@@ -1,0 +1,49 @@
+package thread.bank;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+public class ServerBank extends JFrame implements Runnable{
+	ServerSocket server = null;
+	Socket       client = null;
+	JTextArea 	jta_log = new JTextArea();
+	JScrollPane jsp_log = new JScrollPane(jta_log
+			                             ,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+			                             ,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);//일종의 속지임
+	ServerBankThread sbt = null;
+	public void initDisplay() {
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent we) {
+				try {
+					server.close();
+					client.close();
+					System.exit(0);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		});
+		this.add("Center",jsp_log);
+		this.setTitle("서버 로그 출력....");
+		this.setSize(500, 400);
+		this.setVisible(true);		
+	}
+	public static void main(String[] args) {
+		ServerBank sb = new ServerBank();
+		sb.initDisplay();
+		new Thread(sb).start();//내[TalkServer]안에 있는 run메소드 호출됨.		
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

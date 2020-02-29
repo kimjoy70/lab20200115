@@ -1,0 +1,19 @@
+package design.book;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+
+public class A {
+
+	public static void main(String[] args) {
+		   ManagementFactory.getRuntimeMXBean();
+		   RuntimeMXBean rt = ManagementFactory.getRuntimeMXBean();
+		   String processID = rt.getName();
+		   System.out.println("PID = " + processID);                     
+
+		   processID = processID.substring(0, processID.indexOf("@"));
+		   System.out.println("PID = " + processID);                     
+
+	}
+
+}

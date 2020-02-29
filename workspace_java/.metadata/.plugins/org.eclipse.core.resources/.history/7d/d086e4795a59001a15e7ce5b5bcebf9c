@@ -1,0 +1,77 @@
+package thread.bank;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.StringTokenizer;
+
+public class ServerBankThread extends Thread {
+	ServerBank serverBank = null;
+	ObjectInputStream ois  = null;
+	ObjectOutputStream oos = null;	
+	public ServerBankThread(ServerBank serverBank) {
+		this.serverBank = serverBank;
+		try {
+			oos = new ObjectOutputStream
+					(serverBank.client.getOutputStream());			
+			ois = new ObjectInputStream
+						(serverBank.client.getInputStream());
+			String msg = (String)ois.readObject();
+			serverBank.jta_log.append(msg+"\n");
+			serverBank.jta_log.setCaretPosition(serverBank.jta_log.getDocument().getLength());
+			StringTokenizer st = null;
+			if(msg!=null) {
+				 st = new StringTokenizer(msg,Protocol.seperator);
+			}
+		} catch (Exception e) {
+			System.out.println("TalkServerThread:"+e.getMessage()+","+e.toString());
+		}		
+	}//////////////end of ServerBankThread
+	public void broadCasting(String msg) {
+		//JOptionPane.showMessageDialog(ts, "서버:사람수:"+ts.globalList.size());
+		synchronized(this) {
+			for(ServerBankThread tst:ts.globalList) {
+				tst.send(msg);
+			}
+		}
+	}//////////////end of broadCasting 전체에 방송
+    protected void broadcast(String msg) {
+        synchronized(this) {
+         for(int i = 0; i < ts.roomList.size(); i++ ) {
+            Room  room  = (Room)ts.roomList.get(i);
+            if(g_title.equals(room.title)) {
+               for(int j = 0; j < room.userList.size(); j++ ){
+                  TalkServerThread  tst = (TalkServerThread)room.userList.get(j);
+                  try{
+                       tst.send(msg);
+                  }catch(Exception ex) {
+                      room.userList.remove(j--);
+                  }
+                }//for j ended
+                break;
+             }
+          }//for i ended
+         }
+       }//broadcast method ended	
+	public void roomCasting(String msg, String roomTitle) {
+		for(int i=0;i<ts.roomList.size();i++) {
+			Room room = ts.roomList.get(i);
+			if(roomTitle.equals(room.title)) {
+				for(int j=0;j<room.userList.size();j++) {
+					TalkServerThread tst = room.userList.get(j);
+					try {
+						tst.send(msg);
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				}
+			}
+		}
+	}//////////////end of roomCast 톡방에 방송
+	private void send(String msg) {
+		try {
+			oos.writeObject(msg);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+}

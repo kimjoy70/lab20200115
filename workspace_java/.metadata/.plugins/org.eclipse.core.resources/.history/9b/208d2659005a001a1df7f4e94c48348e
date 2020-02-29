@@ -1,0 +1,144 @@
+package thread.bank;
+
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.table.DefaultTableModel;
+
+public class CustomerBank extends JFrame implements ActionListener{
+	Socket mySocket = null;
+	ObjectInputStream ois  = null;
+	ObjectOutputStream oos = null;		
+	String nickName = null;
+	String ip = "127.0.0.1";
+	int port = 3002;
+	JTextArea jta_cus = new JTextArea(9,30);
+	JScrollPane jsp_cus = new JScrollPane(jta_cus);
+	String cols[] = {"계좌번호","잔액","예금주","ID"};
+	String data[][] = new String[0][4];
+	DefaultTableModel dtm_acc = new DefaultTableModel(data,cols);
+	JTable jtb_acc = new JTable(dtm_acc);
+	JScrollPane jsp_acc = new JScrollPane(jtb_acc);
+	CustomerDao cusDao = new CustomerDao();
+	JButton jbtn_search = new JButton("계좌조회");
+	JButton jbtn_transfer = new JButton("계좌이체");
+	JButton jbtn_deposit = new JButton("입금");
+	JButton jbtn_contribution = new JButton("출금");
+	JButton jbtn_exit = new JButton("종료");
+	JPanel jp_north = new JPanel();
+	String msg = null;
+	CustomerBank(){
+		nickName = JOptionPane.showInputDialog("너의 대화명은?");
+		if(nickName==null) {
+			return;
+		}
+		initDisplay();
+		connect_process();
+		setAccountBank();
+	}
+	public void setAccountBank() {
+		List<Map<String,Object>> baList = cusDao.getBankAccount("");
+		while(dtm_acc.getRowCount()>0) {
+			dtm_acc.removeRow(0);
+		}
+		for(int i=0;i<baList.size();i++) {
+			Map<String,Object> rMap = baList.get(i);
+			Vector<Object> v = new Vector<>();
+			v.add(rMap.get("accountnumber"));
+			v.add(rMap.get("balance"));
+			v.add(rMap.get("mem_name"));
+			v.add(rMap.get("mem_id"));
+			dtm_acc.addRow(v);
+		}		
+	}
+	public void initDisplay() {
+		this.setTitle(nickName+"님의 대화창");
+		jbtn_search.addActionListener(this);
+		jbtn_transfer.addActionListener(this);
+		jbtn_deposit.addActionListener(this);
+		jbtn_contribution.addActionListener(this);
+		jbtn_exit.addActionListener(this);
+		jp_north.setLayout(new FlowLayout(FlowLayout.LEFT));
+		jp_north.add(jbtn_search);
+		jp_north.add(jbtn_transfer);
+		jp_north.add(jbtn_deposit);
+		jp_north.add(jbtn_contribution);
+		jp_north.add(jbtn_exit);
+		this.add("Center",jsp_acc);
+		this.add("North",jp_north);
+		this.add("South",jsp_cus);
+		this.setSize(500, 700);
+		this.setVisible(true);		
+	}
+	public void connect_process() {
+		this.setTitle(nickName+"님의 대화창");
+		try {
+			//통신은 지연될 수 있다.-wait - try...catch해야함.
+			mySocket = new Socket(ip,port);
+			oos = new ObjectOutputStream
+					(mySocket.getOutputStream());			
+			ois = new ObjectInputStream
+						(mySocket.getInputStream());
+			msg = (String)ois.readObject();
+			JOptionPane.showMessageDialog(this, msg);
+			jta_cus.append(msg+"\n");
+			StringTokenizer st = null;
+			int protocol = 0;
+			if(msg!=null) {
+				 st = new StringTokenizer(msg,Protocol.seperator);
+			}
+			protocol = Integer.parseInt(st.nextToken());//100
+			jta_cus.append(protocol+"\n");
+			if(protocol == Protocol.ROOM_NO) {
+				
+				return;
+			}
+			oos.writeObject(Protocol.ROOM_IN
+					       +Protocol.seperator+nickName);			
+			CustomerBankThread cbt = new CustomerBankThread(this);
+			cbt.start();//TalkClientThread의 run호출됨.-콜백함수
+			
+		} catch (Exception e) {
+			System.out.println(e.toString());//에러 힌트문 출력.
+		}		
+	}	
+	public static void main(String[] args) {
+		CustomerBank cus = new CustomerBank();
+	}
+	//종료의 경우 여러 이벤트 에서 재사용할 수 있으므로 재사용 가능하도록 메소드로 구현해 볼것.
+	public void exitChat() {
+		try {
+			oos.writeObject(Protocol.ROOM_OUT+"#"+this.nickName);
+		} catch (Exception e) {
+			//stack메모리 영역에 쌓여있는 에러 메시지들을 순차적으로 출력해주고 라인번호와 에러 메시지 출력
+			e.printStackTrace();//꼭 기억하자.- 힌트를 출력하는 메소드인데 이력까지도 출력, 라인번호도 같이 출력
+		}
+	}	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object obj = e.getSource();
+		if(jbtn_exit == obj) {
+			exitChat();
+			//상수 0을 주면 자바가상머신과의 연결고리를 끊게됨.
+			//어플 종료 - 메모리가 모두 회수됨.
+			System.exit(0);			
+		}
+		
+	}
+
+}

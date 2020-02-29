@@ -1,0 +1,79 @@
+package design.book;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JOptionPane;
+
+import com.util.DBConnectionMgr;
+
+public class BookDao {
+	DBConnectionMgr dbMgr = DBConnectionMgr.getInstance();
+	Connection con = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	BookApp bookApp = null;
+	public BookDao(BookApp bookApp) {
+		this.bookApp = bookApp;
+	}
+	public List<Map<String,Object>> getBookList(Map<String, Object> pMap){
+		List<Map<String,Object>> bList = new ArrayList<>();
+		StringBuilder sql = new StringBuilder();
+		try {
+			sql.append("select b_no, b_name, author, publish, b_info, b_img from book2020");
+			int b_no = 0;
+			con = dbMgr.getConnection();
+			//JOptionPane.showMessageDialog(bookApp, "pMap:"+pMap);
+			if(pMap!=null && Integer.parseInt(pMap.get("b_no").toString())>0) {
+				b_no = Integer.parseInt(pMap.get("b_no").toString());
+				sql.append(" where b_no=?");
+			}			
+			pstmt = con.prepareStatement(sql.toString());
+			if(b_no > 0) {
+				pstmt.setInt(1, b_no);
+			}			
+			rs = pstmt.executeQuery();
+			Map<String,Object> rMap = null;
+			while(rs.next()) {
+				rMap = new HashMap<>();
+				rMap.put("b_no", rs.getInt("b_no"));
+				rMap.put("b_name", rs.getString("b_name"));
+				rMap.put("author", rs.getString("author"));
+				rMap.put("publish", rs.getString("publish"));
+				rMap.put("b_info", rs.getString("b_info"));
+				rMap.put("b_img", rs.getString("b_img"));
+				bList.add(rMap);
+			}	
+		} catch (Exception e) {
+			System.out.println("Exception : "+e.toString());
+			e.printStackTrace();
+		}
+		return bList;
+	}
+	public int insertBook(Map<String, Object> pMap) {
+		int result = 0;
+		pMap.put("b_img", " ");
+		StringBuilder sql = new StringBuilder();
+		try {
+			sql.append("insert into book2020 values(seq_book2020.nextval,?,?,?,?,?)");
+			con = dbMgr.getConnection();
+			pstmt = con.prepareStatement(sql.toString());
+			int i=1;
+			pstmt.setString(i++, pMap.get("b_name").toString());
+			pstmt.setString(i++, pMap.get("author").toString());
+			pstmt.setString(i++, pMap.get("publish").toString());
+			pstmt.setString(i++, pMap.get("b_info").toString());
+			pstmt.setString(i++, pMap.get("b_img").toString());
+			result = pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+}

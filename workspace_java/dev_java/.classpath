@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Java/dev_spring2017/dev_spring20170928/WebContent/WEB-INF/lib/mybatis-3.2.8.jar"/>
+	<classpathentry kind="lib" path="C:/Java/dev_spring2017/dev_spring20170928/WebContent/WEB-INF/lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="C:/Java/ibatis-2.3.4.726.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_191"/>
+	<classpathentry kind="lib" path="gson-2.8.5.jar"/>
+	<classpathentry kind="lib" path="bcprov-jdk15on-162.jar"/>
+	<classpathentry kind="lib" path="C:/workspace_java/dev_java/slf4j-api-1.7.28.jar"/>
+	<classpathentry kind="lib" path="C:/jdk1.8/lib/javax.mail-1.6.2.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

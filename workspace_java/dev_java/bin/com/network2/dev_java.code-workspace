@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "C:\\workspace_script"
+		},
+		{
+			"path": "C:\\my-app"
+		},
+		{
+			"path": "C:\\workspace_java"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.classpath": true,
+			"**/.project": true,
+			"**/.settings": true,
+			"**/.factorypath": true
+		}
+	}
+}

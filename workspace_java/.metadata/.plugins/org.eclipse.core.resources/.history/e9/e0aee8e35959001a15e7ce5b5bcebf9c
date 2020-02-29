@@ -1,0 +1,14 @@
+package thread.bank;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+public class ServerBankThread extends Thread {
+	ServerBank serverBank = null;
+	ObjectInputStream ois  = null;
+	ObjectOutputStream oos = null;	
+	public ServerBankThread(ServerBank serverBank) {
+		this.serverBank = serverBank;
+	}
+	
+}
