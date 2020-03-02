@@ -1,8 +1,6 @@
 package thread.bank;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ObjectInputStream;
@@ -10,7 +8,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -24,19 +21,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class CustomerBank extends JFrame implements ActionListener{
+public class DaeLimApt extends JFrame implements ActionListener{
 	Socket mySocket = null;
-	Socket timeSocket = null;
 	ObjectInputStream ois  = null;
 	ObjectOutputStream oos = null;		
-	ObjectInputStream tois  = null;
-	ObjectOutputStream toos = null;		
 	String nickName = null;
-	String ip = "192.168.0.70";
+	String ip = "192.168.0.24";
 	int port = 3002;
-	int tport = 3005;
-	JPanel jp_south = new JPanel();
-	JLabel jlb_time = new JLabel("현재시간",JLabel.CENTER);
 	JTextArea jta_cus = new JTextArea(9,30);
 	JScrollPane jsp_cus = new JScrollPane(jta_cus);
 	String cols[] = {"계좌번호","잔액","예금주","ID"};
@@ -58,25 +49,20 @@ public class CustomerBank extends JFrame implements ActionListener{
 	JLabel jlb_jango = new JLabel("잔고");
 	JTextField jtf_bala = new JTextField(10);
 	String msg = null;
-	WithDrawDlg wd = null;
-	String dnum = "";//입금계좌번호
-	String wnum = "";//출금계좌번호	
-	String mem_id = "";//입금자 아이디
-	int balance = 0;//출금계좌 잔액
-	CustomerBank(){
+	DaeLimApt(){
 		nickName = JOptionPane.showInputDialog("너의 대화명은?");
 		if(nickName==null) {
 			return;
 		}
 		initDisplay();
 		connect_process();
-		time_connect();
 	}
-	public void setAccountBank(String nickName) {
+	public void setAccountBank() {
 		List<Map<String,Object>> baList = cusDao.getBankAccount("");
 		while(dtm_acc.getRowCount()>0) {
 			dtm_acc.removeRow(0);
 		}
+		
 		for(int i=0;i<baList.size();i++) {
 			Map<String,Object> rMap = baList.get(i);
 			if(nickName.equals(rMap.get("mem_id").toString())) {
@@ -98,44 +84,18 @@ public class CustomerBank extends JFrame implements ActionListener{
 		jbtn_deposit.addActionListener(this);
 		jbtn_withdraw.addActionListener(this);
 		jbtn_exit.addActionListener(this);
-		jp_south.setLayout(new BorderLayout());
-		jp_south.add("Center",jsp_cus);
-		jp_south.add("South",jlb_time);
-		jp_north.setLayout(new GridLayout(2,1));
-		jp_north1.setLayout(new FlowLayout(FlowLayout.LEFT));
-		jp_north2.setLayout(new FlowLayout(FlowLayout.LEFT));
-		jp_north1.add(jbtn_search);
-		jp_north1.add(jbtn_transfer);
-		jp_north1.add(jbtn_deposit);
-		jp_north1.add(jbtn_withdraw);
-		jp_north1.add(jbtn_exit);
-		jp_north2.add(jlb_wnum);
-		jp_north2.add(jtf_wnum);
-		jp_north2.add(jlb_jango);
-		jp_north2.add(jtf_bala);
-		jp_north.add(jp_north2);
-		jp_north.add(jp_north1);
+		jp_north.setLayout(new FlowLayout(FlowLayout.LEFT));
+		jp_north.add(jbtn_search);
+		jp_north.add(jbtn_transfer);
+		jp_north.add(jbtn_deposit);
+		jp_north.add(jbtn_withdraw);
+		jp_north.add(jbtn_exit);
 		this.add("Center",jsp_acc);
 		this.add("North",jp_north);
-		this.add("South",jp_south);
+		this.add("South",jsp_cus);
 		this.setSize(500, 700);
 		this.setVisible(true);		
 	}
-	public void time_connect() {
-		try {
-			//통신은 지연될 수 있다.-wait - try...catch해야함.
-			timeSocket = new Socket(ip,tport);
-			toos = new ObjectOutputStream
-					(timeSocket.getOutputStream());			
-			tois = new ObjectInputStream
-						(timeSocket.getInputStream());		
-			CustomerBankTimeThread cbtt = new CustomerBankTimeThread(this);
-			cbtt.start();//TalkClientThread의 run호출됨.-콜백함수
-			
-		} catch (Exception e) {
-			System.out.println(e.toString());//에러 힌트문 출력.
-		}		
-	}	
 	public void connect_process() {
 		this.setTitle(nickName+"님의 대화창");
 		try {
@@ -144,10 +104,10 @@ public class CustomerBank extends JFrame implements ActionListener{
 			oos = new ObjectOutputStream
 					(mySocket.getOutputStream());			
 			ois = new ObjectInputStream
-					(mySocket.getInputStream());
+						(mySocket.getInputStream());
 			oos.writeObject(Protocol.ROOM_IN
-					+Protocol.seperator+nickName);			
-			CustomerBankThread cbt = new CustomerBankThread(this);
+					       +Protocol.seperator+nickName);			
+			DaeLimAptThread cbt = new DaeLimAptThread(this);
 			cbt.start();//TalkClientThread의 run호출됨.-콜백함수
 			
 		} catch (Exception e) {
@@ -155,7 +115,7 @@ public class CustomerBank extends JFrame implements ActionListener{
 		}		
 	}	
 	public static void main(String[] args) {
-		CustomerBank cus = new CustomerBank();
+		DaeLimApt apt = new DaeLimApt();
 	}
 	//종료의 경우 여러 이벤트 에서 재사용할 수 있으므로 재사용 가능하도록 메소드로 구현해 볼것.
 	public void exitChat() {
@@ -175,24 +135,6 @@ public class CustomerBank extends JFrame implements ActionListener{
 			//어플 종료 - 메모리가 모두 회수됨.
 			System.exit(0);			
 		}
-		else if(jbtn_withdraw == obj) {
-			int index =-1;
-			for(int i=0;i<dtm_acc.getRowCount();i++) {
-				int indexs[] = jtb_acc.getSelectedRows();
-				index = indexs[0];
-				dnum = dtm_acc.getValueAt(index, 0).toString();
-				mem_id = dtm_acc.getValueAt(index, 3).toString();
-				wnum = jtf_wnum.getText();
-			}
-			if(index==-1) {
-				JOptionPane.showMessageDialog(this, "입금 계좌를 선택해주세요.");
-				return;
-			}
-			else {
-				wd = new WithDrawDlg(this);
-				wd.setVisible(true);
-			}
-		}
-	}///////////////////end of actionPerformed
-
+		
+	}
 }

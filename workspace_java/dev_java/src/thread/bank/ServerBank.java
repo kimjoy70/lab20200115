@@ -29,7 +29,7 @@ public class ServerBank extends JFrame implements Runnable{
 	JScrollPane jsp_history = new JScrollPane(jtb_history);
 	ServerBankThread sbt = null;
 	List<ServerBankThread> globalList = null;
-	CustomerDao cusDao = new CustomerDao();
+	CustomerDao cusDao = new CustomerDao(this);
 	public void initDisplay() {
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent we) {
@@ -53,6 +53,7 @@ public class ServerBank extends JFrame implements Runnable{
 		this.setVisible(true);		
 	}
 	public static void main(String[] args) {
+		new BankTimeServer();
 		ServerBank sb = new ServerBank();
 		sb.initDisplay();
 		new Thread(sb).start();

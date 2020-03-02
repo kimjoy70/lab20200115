@@ -11,5 +11,8 @@ public class Protocol {
 	public static final int MESSAGE 	= 200; 
 	public static final int WHISHER 	= 201; 
 	public static final int CHANGE   	= 300; 
+	public static final int DEPOSIT   	= 400;//입금 
+	public static final int WITHDRAW    = 401;//출금 
+	public static final int BALCHECK    = 402;//잔액확인 
 	public static final String seperator= "#"; 
 }
