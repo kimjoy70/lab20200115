@@ -1,5 +1,6 @@
 package thread.bank;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,11 +24,17 @@ import javax.swing.table.DefaultTableModel;
 
 public class SKTelecom extends JFrame implements ActionListener{
 	Socket mySocket = null;
+	Socket timeSocket = null;
 	ObjectInputStream ois  = null;
-	ObjectOutputStream oos = null;		
+	ObjectOutputStream oos = null;	
+	ObjectInputStream tois  = null;
+	ObjectOutputStream toos = null;	
 	String nickName = null;
-	String ip = "192.168.0.24";
+	String ip = "192.168.0.70";
 	int port = 3002;
+	int tport = 3005;
+	JPanel jp_south = new JPanel();
+	JLabel jlb_time = new JLabel("현재시간",JLabel.CENTER);
 	JTextArea jta_cus = new JTextArea(9,30);
 	JScrollPane jsp_cus = new JScrollPane(jta_cus);
 	String cols[] = {"계좌번호","잔액","예금주","ID"};
@@ -56,6 +63,7 @@ public class SKTelecom extends JFrame implements ActionListener{
 		}
 		initDisplay();
 		connect_process();
+		time_connect();
 	}
 	public void setAccountBank(String nickName) {
 		List<Map<String,Object>> baList = cusDao.getBankAccount("");
@@ -83,6 +91,9 @@ public class SKTelecom extends JFrame implements ActionListener{
 		jbtn_deposit.addActionListener(this);
 		jbtn_withdraw.addActionListener(this);
 		jbtn_exit.addActionListener(this);
+		jp_south.setLayout(new BorderLayout());
+		jp_south.add("Center",jsp_cus);
+		jp_south.add("South",jlb_time);
 		jp_north.setLayout(new FlowLayout(FlowLayout.LEFT));
 		jp_north.add(jbtn_search);
 		jp_north.add(jbtn_transfer);
@@ -91,10 +102,25 @@ public class SKTelecom extends JFrame implements ActionListener{
 		jp_north.add(jbtn_exit);
 		this.add("Center",jsp_acc);
 		this.add("North",jp_north);
-		this.add("South",jsp_cus);
+		this.add("South",jp_south);
 		this.setSize(500, 700);
 		this.setVisible(true);		
 	}
+	public void time_connect() {
+		try {
+			//통신은 지연될 수 있다.-wait - try...catch해야함.
+			timeSocket = new Socket(ip,tport);
+			toos = new ObjectOutputStream
+					(timeSocket.getOutputStream());			
+			tois = new ObjectInputStream
+						(timeSocket.getInputStream());		
+			SKTelecomTimeThread sttt = new SKTelecomTimeThread(this);
+			sttt.start();//TalkClientThread의 run호출됨.-콜백함수
+			
+		} catch (Exception e) {
+			System.out.println(e.toString());//에러 힌트문 출력.
+		}		
+	}	
 	public void connect_process() {
 		this.setTitle(nickName+"님의 대화창");
 		try {

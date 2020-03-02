@@ -21,7 +21,7 @@ public class BankTimeServerThread extends Thread {
 					(bts.client.getOutputStream());			
 			ois = new ObjectInputStream
 						(bts.client.getInputStream());
-			while(true) {
+			//while(true) {
 				msg = bts.getTimeStr();
 				oos.writeObject(msg);
 				
@@ -33,18 +33,15 @@ public class BankTimeServerThread extends Thread {
 				bts.globalList.add(this);
 				//JOptionPane.showMessageDialog(bts, "40:msg:"+msg);
 				this.broadCasting(msg);		
-				try {
-					sleep(1000);
-					//bts.jta_log.append(msg+"\n");
-				} catch(InterruptedException i) {}
-			}
+
+			//}
 			
 		} catch (Exception e) {
 			System.out.println("BankTimeServerThread:"+e.getMessage()+","+e.toString());
 		}		
 	}//////////////end of ServerBankThread
 	public void broadCasting(String msg) {
-		//JOptionPane.showMessageDialog(ts, "서버:사람수:"+ts.globalList.size());
+		JOptionPane.showMessageDialog(bts, "서버:사람수:"+bts.globalList.size());
 		synchronized(this) {
 			for(BankTimeServerThread tst:bts.globalList) {
 				tst.send(msg);
@@ -58,4 +55,18 @@ public class BankTimeServerThread extends Thread {
 			e.printStackTrace();
 		}
 	}	
+	public void run() {
+		while(true) {
+			try {
+				msg = bts.getTimeStr();
+				oos.writeObject(msg);
+				try {
+					sleep(1000);
+					//bts.jta_log.append(msg+"\n");
+				} catch(InterruptedException i) {}				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	}
 }
